@@ -358,7 +358,7 @@ nock('https://devapi.currencycloud.com:443')
     'content-type': 'application/json;charset=utf-8',
     date: 'Tue, 07 Nov 2017 13:51:29 GMT',
     'x-request-id': '2914250135666307067',
-    'x-content-type-options': 'ƒnosniff',
+    'x-content-type-options': 'nosniff',
     connection: 'close',
     'content-length': '213'
   });

@@ -143,7 +143,7 @@ nock('https://devapi.currencycloud.com:443', {"encodedQueryParams": true})
 
 //Find conversion
 nock('https://devapi.currencycloud.com:443', {"encodedQueryParams": true})
-    .post('/v2/conversions/create', "buy_currency=EUR&sell_currency=GBP&fixed_side=buy&amount=10000.23&reason=Settling+invoices&term_agreement=true")
+    .post('/v2/conversions/create', "buy_currency=USD&sell_currency=GBP&fixed_side=buy&amount=10000.23&reason=Settling+invoices&term_agreement=true")
     .reply(200, {
         "id": "ffdf0544-a868-488f-b096-effe8926a857",
         "settlement_date": "2018-11-27T14:30:00+00:00",
@@ -151,9 +151,9 @@ nock('https://devapi.currencycloud.com:443', {"encodedQueryParams": true})
         "short_reference": "20181123-FSFQLZ",
         "creator_contact_id": "3cae081f-56f7-4f2d-8235-45713b592b43",
         "account_id": "c0ea266f-b969-4d61-9ca0-e790c79072e5",
-        "currency_pair": "EURGBP",
+        "currency_pair": "USDGBP",
         "status": "awaiting_funds",
-        "buy_currency": "EUR",
+        "buy_currency": "USD",
         "sell_currency": "GBP",
         "client_buy_amount": "10000.23",
         "client_sell_amount": "8037.18",
@@ -178,7 +178,7 @@ nock('https://devapi.currencycloud.com:443', {"encodedQueryParams": true})
 
 nock('https://devapi.currencycloud.com:443', {"encodedQueryParams": true})
     .get('/v2/conversions/find')
-    .query({"conversion_ids": ["ffdf0544-a868-488f-b096-effe8926a857"]})
+    .query({"conversion_ids[]": "ffdf0544-a868-488f-b096-effe8926a857"})
     .reply(200, {
         "conversions": [{
             "id": "ffdf0544-a868-488f-b096-effe8926a857",

@@ -130,7 +130,9 @@ describe('conversions', function () {
 
     describe('find', function () {
         it('successfully finds a conversion', function (done) {
-            currencyCloud.conversions.create(new mock.conversions.conversion1())
+            var conversion = new mock.conversions.conversion1();
+            conversion.buyCurrency = 'USD';
+            currencyCloud.conversions.create(conversion)
                 .then(function (created) {
                     return currencyCloud.conversions.find({
                         conversionIds: [created.id]
