@@ -76,6 +76,28 @@ module.exports = {
                 default: true
             };
         },
+        complianceSettings1: function() {
+            return {
+                accountId: "3e12053j-ae22-40b1-cc4e-cc0230c009a5",
+                industryType: "some-type",
+                countryOfIncorporation: "US",
+                dateOfIncorporation: "2020-01-30",
+                businessWebsiteUrl: "https://currencycloud.com",
+                expectedTransactionCountries: ["US", "GB"],
+                expectedTransactionCurrencies: ["GBP"],
+                expectedMonthlyActivityVolume: 10,
+                expectedMonthlyActivityValue: "30.00",
+                taxIdentification: "some-tax-id",
+                nationalIdentification: "some-national-id",
+                countryOfCitizenship: "US",
+                tradingAddressStreet: "some-street",
+                tradingAddressCity: "some-city",
+                tradingAddressState: "NY",
+                tradingAddressPostalcode: "90210",
+                tradingAddressCountry: "US",
+                customerRisk: "LOW"
+            };
+        },
         schema: new JSONschema({
             id: 'UUID',
             legalEntityType: 'string',

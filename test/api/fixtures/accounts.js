@@ -301,5 +301,70 @@ nock('https://devapi.currencycloud.com:443')
   });
 
 nock('https://devapi.currencycloud.com:443')
+  .get('/v2/accounts/3e12053j-ae22-40b1-cc4e-cc0230c009a5/compliance_settings')
+  .reply(200, {
+    "account_id": "3e12053j-ae22-40b1-cc4e-cc0230c009a5",
+    "industry_type": "some-type",
+    "country_of_incorporation": "US",
+    "date_of_incorporation": "2020-01-30",
+    "business_website_url": "https://currencycloud.com",
+    "expected_transaction_countries": ["US", "GB"],
+    "expected_transaction_currencies": ["GBP"],
+    "expected_monthly_activity_volume": 10,
+    "expected_monthly_activity_value": "30.00",
+    "tax_identification": "some-tax-id",
+    "national_identification": "some-national-id",
+    "country_of_citizenship": "US",
+    "trading_address_street": "some-street",
+    "trading_address_city": "some-city",
+    "trading_address_state": "NY",
+    "trading_address_postalcode": "90210",
+    "trading_address_country": "US",
+    "customer_risk": "LOW"
+  });
+
+nock('https://devapi.currencycloud.com:443')
+  .post('/v2/accounts/3e12053j-ae22-40b1-cc4e-cc0230c009a5/compliance_settings', {
+    "industry_type": "some-type",
+    "country_of_incorporation": "US",
+    "date_of_incorporation": "2020-01-30",
+    "business_website_url": "https://currencycloud.com",
+    "expected_transaction_countries[]": ["US", "GB"],
+    "expected_transaction_currencies[]": "GBP",
+    "expected_monthly_activity_volume": 10,
+    "expected_monthly_activity_value": "30.00",
+    "tax_identification": "some-tax-id",
+    "national_identification": "some-national-id",
+    "country_of_citizenship": "US",
+    "trading_address_street": "some-street",
+    "trading_address_city": "some-city",
+    "trading_address_state": "NY",
+    "trading_address_postalcode": "90210",
+    "trading_address_country": "US",
+    "customer_risk": "LOW"
+  })
+  .reply(200, {
+    "account_id": "3e12053j-ae22-40b1-cc4e-cc0230c009a5",
+    "industry_type": "some-type",
+    "country_of_incorporation": "US",
+    "date_of_incorporation": "2020-01-30",
+    "business_website_url": "https://currencycloud.com",
+    "expected_transaction_countries": ["US", "GB"],
+    "expected_transaction_currencies": ["GBP"],
+    "expected_monthly_activity_volume": 10,
+    "expected_monthly_activity_value": "30.00",
+    "tax_identification": "some-tax-id",
+    "national_identification": "some-national-id",
+    "country_of_citizenship": "US",
+    "trading_address_street": "some-street",
+    "trading_address_city": "some-city",
+    "trading_address_state": "NY",
+    "trading_address_postalcode": "90210",
+    "trading_address_country": "US",
+    "customer_risk": "LOW"
+  });
+
+
+nock('https://devapi.currencycloud.com:443')
   .post('/v2/authenticate/close_session')
   .reply(200, {});

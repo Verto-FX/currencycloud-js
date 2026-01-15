@@ -168,4 +168,42 @@ describe('accounts', function() {
     });
 
   });
+
+  describe('getComplianceSettings', function() {
+    it('fails if required parameters are missing', function() {
+      expect(function() {
+        currencyCloud.accounts.getComplianceSettings(/*no params*/);
+      }).to.throw();
+    });
+
+    it('successfully gets compliance settings for the account', function(done) {
+      currencyCloud.accounts.getComplianceSettings({
+        accountId: mock.accounts.complianceSettings1().accountId
+      })
+        .then(function(gotten) {
+          expect(gotten).to.eql(mock.accounts.complianceSettings1());
+          done();
+        })
+        .catch(done);
+    });
+
+    });
+
+  describe('updateComplianceSettings', function() {
+    it('fails if required parameters are missing', function() {
+      expect(function() {
+        currencyCloud.accounts.updateComplianceSettings(/*no params*/);
+      }).to.throw();
+    });
+
+    it('successfully updates settings for the account', function(done) {
+      currencyCloud.accounts.updateComplianceSettings(new mock.accounts.complianceSettings1())
+        .then(function(updated) {
+          expect(updated).to.eql(mock.accounts.complianceSettings1());
+          done();
+        })
+        .catch(done);
+    });
+
+  });
 });
