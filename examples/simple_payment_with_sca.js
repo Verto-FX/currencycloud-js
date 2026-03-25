@@ -1,6 +1,6 @@
 /**
  * This is JavaScript implementation of the
- * {@link https://developer.currencycloud.com/guides/getting-started/introduction// Currency Cloud API v2.0 Cookbook} example.
+ * {@link https://developer.currencycloud.com/guides/integration-guides/sca_sponsored_api_payments/ Currency Cloud API v2.0 Cookbook} example.
  * Additional documentation for each API endpoint can be found at {@link https://developer.currencycloud.com/api-reference/}.
  * If you have any queries or you require support, please contact our Support team at {@link support@currencycloud.com}.
  */
@@ -19,9 +19,6 @@ const opts = {
 };
 
 let simplePayment = {
-    getBalance: {
-        currency: "EUR"
-    },
     beneficiary: {
         name: "Acme GmbH",
         bankAccountHolderName: "Acme GmbH",
@@ -45,17 +42,12 @@ let simplePayment = {
 };
 
 /**
- * Make simple payments to beneficiaries
- *  A payment is a transfer of money from a payer’s account to a beneficiary.
- *
- * Payments cannot be made in one currency and received in another. To pay a beneficiary in a particular currency, the
- * payer must hold funds in that currency. If necessary, the payer must convert funds from one currency to another before
- * making a payment.
- *
+ * Make an SCA enabled payments to beneficiaries
+ *  This is an extension of the simple payment example, which includes Strong Customer Authentication (SCA).
  * In this cookbook, you will:
  *
- * 1. Check how much money you hold in various foreign currencies.
- * 2. Use funds from your Euros balance to make a payment in Euros to a beneficiary in Germany.
+ * 1. Validate a payment using Strong Customer Authentication (SCA).
+ * 2. Create a payment using the SCA ID and token received from the validation step.
  */
 
 /**
@@ -79,79 +71,7 @@ let login = () => {
 };
 
 /**
- * 2. Check available balances
- * To find out how many Euros you have, call the Get Balance endpoint, passing EUR as the third URI path parameter.
- */
-
-let getBalance = () => {
-    return currencyCloud.retry(
-        () => {
-            return currencyCloud.balances.get(simplePayment.getBalance)
-                .then((res) => {
-                    console.log('getBalance: ' + JSON.stringify(res, null, 2) + '\n');
-                });
-        },
-        opts
-    );
-};
-
-/**
- * You can also check the balances for all foreign currencies that you hold in your Currencycloud account by calling the
- *  Find Balances endpoint
- */
-
-let findBalances = () => {
-    return currencyCloud.retry(
-        () => {
-            return currencyCloud.balances.find()
-                .then((res) => {
-                    console.log('findBalance: ' + JSON.stringify(res, null, 2) + '\n');
-                });
-        });
-};
-
-/**
- * 3. Check payment requirements
- *  Currencycloud supports two types of payments:
- *
- * a. Regular payments: Made using the local bank network. Regular payments are normally received by beneficiary’s within
- * five working days of the settlement date. This is a good choice for low-value, non-urgent transactions.
- *
- * b. Priority payments: Made using the SWIFT network. Payments can be made to over 212 countries, and 95% of payments
- * arrive within one working day.
- *
- * You want to make a regular payment to a supplier based in Germany. You will pay the beneficiary in Euros. You have
- * enough funds in your Euros balance already to make this payment, so there is no need to top-up your Euros balance
- * beforehand.
- *
- * First, check what details are required to make a regular payment in Euros to a beneficiary with a bank account in
- * Germany. To do that, call the Get Beneficiary Requirements endpoint.
- */
-
-let getBeneficiaryRequiredDetails = () => {
-    return currencyCloud.retry(
-        () => {
-            return currencyCloud.reference.getBeneficiaryRequiredDetails({
-                currency: simplePayment.beneficiary.currency,
-                bankAccountCountry: simplePayment.beneficiary.bankCountry
-            })
-                .then((res) => {
-                    console.log('getBeneficiaryRequiredDetails: ' + JSON.stringify(res, null, 2) + '\n');
-                });
-        },
-        opts,
-        "currencyCloud.reference.getBeneficiaryRequiredDetails"
-    );
-};
-
-/**
- * The response tells us that, to make a regular payment to a German bank account in Euros, we need two pieces of
- information: the IBAN and BIC/SWIFT numbers for the beneficiary. The beneficiary could be either a company or
- an individual. Either way, the same information is required.
- */
-
-/**
- * 4. Add a beneficiary
+ * 2. Add a beneficiary
  * If you know the required details, you can go ahead and create a record for the beneficiary via the
  * Create Beneficiary endpoint.
  */
@@ -176,15 +96,31 @@ let createBeneficiary = () => {
  */
 
 /**
- * 5. Make a payment
- * Authorize a payment by calling the Create Payment endpoint. Optionally, you may provide an idempotency key (via the
+ * 3. Validate a payment using Strong Customer Authentication (SCA)
+ *  To make a payment, you must first validate it using the Validate Payment endpoint.
+ *  This example uses the SCA to authenticated user feature to allow the OTP to sent to the authenticated user rather than your customer. 
+ *  This endpoint will return an SCA ID in the headers of the response. You will need this SCA ID to create the payment.
+ *
+ */ 
+let validatePayment = () => {
+    return currencyCloud.retry(
+        () => {
+            return currencyCloud.payments.validate(simplePayment.payment, true)
+                .then((res) => {
+                    console.log('validatePayment: ' + JSON.stringify(res, null, 2) + '\n');
+                });
+        });
+};
+/**
+ * 4. Authorize a payment by calling the Create Payment endpoint. Optionally, you may provide an idempotency key (via the
  * unique_request_id parameter). This helps protect against accidental duplicate payments.
+ * Use the SCA ID returned from the Validate Payment endpoint to create the payment, along with the OTP received.
  */
 
 let createPayment = () => {
     return currencyCloud.retry(
         () => {
-            return currencyCloud.payments.create(simplePayment.payment)
+            return currencyCloud.payments.create(simplePayment.payment, validatePayment.headers['x-sca-id'], "OTP123456")
                 .then((res) => {
                     console.log('createPayment: ' + JSON.stringify(res, null, 2) + '\n');
                 });
@@ -213,7 +149,7 @@ let getConfirmation = () => {
  */
 
 /**
- * 6. Logout
+ * 5. Logout
  * It is good security practice to retire authentication tokens when they are no longer needed, rather than let them
  * expire. Send a request to the Logout endpoint to terminate an authentication token immediately.
  */
@@ -226,10 +162,8 @@ let logout = () => {
 };
 
 login()
-    .then(getBalance)
-    .then(findBalances)
-    .then(getBeneficiaryRequiredDetails)
     .then(createBeneficiary)
+    .then(validatePayment)
     .then(createPayment)
     .then(getConfirmation)
     .then(logout)

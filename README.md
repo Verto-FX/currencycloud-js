@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/currency-cloud.svg)](https://www.npmjs.com/package/currency-cloud) [![Travis](https://travis-ci.org/CurrencyCloud/currencycloud-js.svg?branch=master)](https://github.com/CurrencyCloud/currencycloud-js) [![David](https://david-dm.org/CurrencyCloud/currencycloud-js.svg)](https://github.com/CurrencyCloud/currencycloud-js)
+[![npm](https://img.shields.io/npm/v/currency-cloud.svg)](https://www.npmjs.com/package/currency-cloud) [![CodeQL](https://github.com/CurrencyCloud/currencycloud-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/CurrencyCloud/currencycloud-js/actions/workflows/github-code-scanning/codeql)
 
 # Currencycloud
 This is the official Javascript SDK for v2 of Currencycloud's API. Additional documentation for each API endpoint can be found at [Currencycloud API documentation][introduction]. If you have any queries or you require support, please contact our development team at development@currencycloud.com
@@ -10,15 +10,8 @@ $ npm install currency-cloud --save
 ```
 
 ## Supported Node versions
-The current least supported Node version is 6.0.0.
+The current least supported Node version is 20.
 
-**2020-10-12 : Deprecation Notice.** Support for the following EOL Node.js versions will be dropped in January 2021
-
-6, 7, 8, 9, 11   
-
-After this date, the SDK will no longer be tested against these versions. 
-Production applications should only use Active LTS or Maintenance LTS Node.js releases. Users should upgrade to the latest 
-stable version of [Node.js](https://nodejs.org/en/about/releases/)
 # Usage
 The following example retrieves all tradeable currencies list:
 ```js
@@ -244,8 +237,8 @@ errors:
 
 ## Dependencies
 * [combined-stream][combined-stream]
-* [request][request]
-* [request-promise][request-promise]
+* [qs][qs]
+* [axios][axios]
 * [retry][retry]
 * [uuid][uuid]
 
@@ -270,7 +263,6 @@ Once a feature has been marked as deprecated, we no longer develop the code or i
 
 ### List of features being deprecated
 ```
-(No features are currently being deprecated)
 ```
 
 # Support
@@ -287,20 +279,24 @@ IMPORTANT: Remember to change the `loginId` and `apiKey` properties in `./test/m
 
 If you don't have a valid login or key, you can get them [here][registration]
 
-# Copyright
-Copyright (c) 2015-2019 Currencycloud. See [LICENSE][license] for details.
+# Security Consideration
+1. Authentication
+    1. All data under [this folder](test/api/fixtures) provide and return dummy credentials to verify that authentication workflows behave as expected.
 
-[introduction]:    https://developer.currencycloud.com/documentation/getting-started/introduction
-[overview]:        https://developer.currencycloud.com/documentation/api-docs/overview/
+# Copyright
+Copyright (c) 2015-2022 Currencycloud. See [LICENSE][license] for details.
+
+[introduction]:    https://developer.currencycloud.com/overview/
+[overview]:        https://developer.currencycloud.com/overview/
 [examples]:        examples
-[request-promise]: https://www.npmjs.com/package/request-promise
+[axios]: https://www.npmjs.com/package/axios
+[qs]: https://www.npmjs.com/package/qs
 [combined-stream]: https://www.npmjs.com/package/combined-stream
-[request]:         https://www.npmjs.com/package/request
 [semver]:          http://semver.org/
 [mocha]:           https://mochajs.org/
 [chai]:            http://chaijs.com/
 [nock]:            https://github.com/node-nock/nock
-[registration]:    https://developer.currencycloud.com/api-register/
+[registration]:    https://developer.currencycloud.com/register-for-an-api-key/
 [license]:         LICENSE.md
 [contr]:           CONTRIBUTING.md
 [hof]:             HALL_OF_FAME.md

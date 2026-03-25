@@ -76,6 +76,28 @@ module.exports = {
                 default: true
             };
         },
+        complianceSettings1: function() {
+            return {
+                accountId: "3e12053j-ae22-40b1-cc4e-cc0230c009a5",
+                industryType: "some-type",
+                countryOfIncorporation: "US",
+                dateOfIncorporation: "2020-01-30",
+                businessWebsiteUrl: "https://currencycloud.com",
+                expectedTransactionCountries: ["US", "GB"],
+                expectedTransactionCurrencies: ["GBP"],
+                expectedMonthlyActivityVolume: 10,
+                expectedMonthlyActivityValue: "30.00",
+                taxIdentification: "some-tax-id",
+                nationalIdentification: "some-national-id",
+                countryOfCitizenship: "US",
+                tradingAddressStreet: "some-street",
+                tradingAddressCity: "some-city",
+                tradingAddressState: "NY",
+                tradingAddressPostalcode: "90210",
+                tradingAddressCountry: "US",
+                customerRisk: "LOW"
+            };
+        },
         schema: new JSONschema({
             id: 'UUID',
             legalEntityType: 'string',
@@ -124,7 +146,7 @@ module.exports = {
                 routingCodeType2: 'aba',
                 routingCodeValue2: '789',
                 bicSwift: 'COBADEFF',
-                iban: 'DE89370400440532013000',
+                iban: 'DE75512108001245126199',
                 defaultBeneficiary: true,
                 bankAddress: '4356 Wisteria Lane',
                 bankName: 'HSBC Bank',
@@ -459,6 +481,24 @@ module.exports = {
             createdAt: 'date',
             updatedAt: 'date',
             releasedAt: 'date'
+        })
+    },
+
+    termsAndConditions: {
+        accept: function(){
+            return {
+                type: 'VGSI',
+                version: '1.0',
+                referenceType: 'ACCOUNT',
+                referenceId: 'ebcaee2f-a733-11ef-8de2-0242ac1d0002',
+                firstName: 'firstName',
+                lastName: 'lastName',
+                email: 'development@currencycloud.com'
+            };
+        },
+        schema: new JSONschema({
+            acceptanceId: 'UUID',
+            acceptedAt: 'date'
         })
     },
 

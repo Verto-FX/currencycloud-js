@@ -29,7 +29,7 @@ nock('https://devapi.currencycloud.com:443', {"encodedQueryParams":true})
         'Content-Type',
         'application/json;charset=utf-8',
         'Content-Length',
-        '640',
+        '669',
         'Connection',
         'close',
         'Server',

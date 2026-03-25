@@ -241,14 +241,14 @@ describe('payments', function () {
         });
     });
 
-    describe('getPaymentSubmission', function () {
+    describe('getNewPaymentSubmission', function () {
         it('fails if required parameters are missing', function () {
             expect(function () {
-                currencyCloud.payments.retrieveSubmission(/*no params*/);
+                currencyCloud.payments.retrieveSubmissionInfo(/*no params*/);
             }).to.throw();
         });
 
-        it('successfully gets a payment submission', function (done) {
+        it('successfully gets a payment submission with format', function (done) {
             getPrerequisites()
                 .then(function (res) {
                     var payment = new mock.payments.payment1();
@@ -257,11 +257,12 @@ describe('payments', function () {
 
                     return currencyCloud.payments.create(payment)
                         .then(function (created) {
-                            return currencyCloud.payments.retrieveSubmission({
+                            return currencyCloud.payments.retrieveSubmissionInfo({
                                 id: created.id
                             })
                                 .then(function (gotten) {
-                                    expect(gotten).to.have.property('mt103').that.is.not.null;
+                                    expect(gotten).to.have.property('message').that.is.not.null;
+                                    expect(gotten).to.have.property('format').that.is.not.null;
                                     expect(gotten).to.have.property('status').that.is.not.null;
                                     expect(gotten).to.have.property('submissionRef').that.is.not.null;
                                     done();
@@ -357,7 +358,7 @@ describe('payments', function () {
     describe('getPaymentConfirmation', function () {
         it('fails if required parameters are missing', function () {
             expect(function () {
-                currencyCloud.payments.retrieveSubmission(/*no params*/);
+                currencyCloud.payments.getConfirmation(/*no params*/);
             }).to.throw();
         });
 
@@ -434,6 +435,89 @@ describe('payments', function () {
                     expect(res).to.have.property('initiationTime').that.eql("2019-07-09T13:20:30+00:00");
                     expect(res).to.have.property('lastUpdateTime').that.eql("2019-07-10T15:39:08+00:00");
                     expect(res).to.have.property('paymentEvents').that.has.length(7);
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe('validate', function () {
+        it('successfully validate a payment', function (done) {
+            currencyCloud.payments.validate({
+                currency:"GBP",
+                amount:100,
+                beneficiaryId:"46ed4827-7b6f-4491-a06f-b548d5a7512d",
+                reason:"validate_unit_test",
+            reference:'validate123'})
+                .then(function (res) {
+                    expect(res).is.not.empty;
+                    expect(res).to.have.property('validationResult').that.eql("success");
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe('validate and create a payment with SCA enabled', function () {
+        it('successfully validates then creates a payment with SCA enabled', function (done) {
+            currencyCloud.payments.validate({
+                currency:"USD",
+                amount:1000,
+                beneficiaryId:"46ed4827-7b6f-4491-a06f-b548d5a7512d",
+                reason:"validate_sca_authenticated_user",
+                reference:'validate123'}, true)
+            .then(function (res) {
+                expect(res).is.not.empty;
+                expect(res).to.have.property('validationResult').that.eql("success");
+                expect(res.headers).to.have.property('x-sca-id').that.is.not.null;
+                expect(res.headers).to.have.property('x-sca-required').that.is.not.null;
+                expect(res.headers).to.have.property('x-sca-type').that.is.not.null;
+                expect(res.headers['x-sca-required']).to.equal('true');
+                expect(res.headers['x-sca-type']).to.equal('sms');
+                expect(res.headers['x-sca-id']).to.equal('123e4567-e89b-12d3-a456-426614174000');
+                done();
+            }).then(function(res) {
+                var payment = new mock.payments.payment1();
+                payment.conversionId = "4a709856-2f20-472d-8ebf-9f2826cec174";
+                payment.beneficiaryId = "15f75bad-2176-42b3-a3a5-a6f561c7a849";
+                payment.amount = 2000;
+                payment.currency = "USD";
+                currencyCloud.payments.create(payment, res.headers['x-sca-id'], "123456")
+                .then(function (created) {
+                    expect(mock.payments.schema.validate(created)).is.true;
+                    expect(created).to.have.property("id").that.eql("a13df79f-6e1c-4427-b2cc-614547c5486a")
+                    done();
+                }).catch(done);
+            });
+        });
+    });
+    describe('retryNotifications', function () {
+        it('fails if required parameters are missing', function () {
+            expect(function () {
+                currencyCloud.payments.retryNotifications(/*no params*/);
+            }).to.throw();
+        });
+
+        it('fails on invalid notification types', async function () {
+            try {
+                await currencyCloud.payments.retryNotifications({
+                    id: 'ffbe0bcb-1cc0-43b8-b931-c40691cf09d9',
+                    notificationType: 'payment_notification'
+                });
+                throw new Error('Expected promise to be rejected');
+            } catch (err) {
+                expect(err).to.exist;
+                expect(err.errors[0].code).to.equal("notification_type_not_in_range");
+            }
+        });
+
+        it('successfully retries sending payment notifications', function (done) {
+            currencyCloud.payments.retryNotifications({
+                id: 'ffbe0bcb-1cc0-43b8-b931-c40691cf09d9',
+                notificationType: 'payment_released_notification'
+            })
+                .then(function (gotten) {
+                    expect(gotten).to.be.an('object');
                     done();
                 })
                 .catch(done);
